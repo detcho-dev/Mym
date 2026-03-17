@@ -278,12 +278,11 @@
 
 <script>
     // 1. تهيئة EmailJS
-    // استبدل YOUR_PUBLIC_KEY بمفتاحك العام من لوحة تحكم EmailJS
+    // ⚠️ مهم جداً: استبدل YOUR_PUBLIC_KEY بمفتاحك الحقيقي
     (function() {
         emailjs.init("HEgMSXV2gcQ_27WMg");
     })();
 
-    // 2. التعامل مع إرسال النموذج
     document.getElementById('storyForm').addEventListener('submit', function(event) {
         event.preventDefault();
         
@@ -291,34 +290,50 @@
         btn.innerText = "جاري الإرسال...";
         btn.disabled = true;
 
-        // جمع البيانات من الحقول
-        const formData = {            email: document.getElementById('email').value,
+        // جمع البيانات للتأكد من أنها موجودة
+        const formData = {
+            email: document.getElementById('email').value,
             title: document.getElementById('title').value,
             notes: document.getElementById('notes').value,
-            
-            // جمع حالة كل خطوة
             step1: document.querySelector('input[name="step1"]:checked').value,
             step2: document.querySelector('input[name="step2"]:checked').value,
             step3: document.querySelector('input[name="step3"]:checked').value,
             step4: document.querySelector('input[name="step4"]:checked').value,
         };
 
-        // 3. إرسال البيانات لـ EmailJS
-        // استبدل YOUR_SERVICE_ID و YOUR_TEMPLATE_ID بالبيانات الخاصة بك
-        emailjs.send('service_kydc4t7', 'template_ji4riqg', formData)
+        // تحقق بسيط قبل الإرسال
+        if(!formData.email || !formData.title) {
+            alert("الرجاء ملء الإيميل والعنوان أولاً!");
+            btn.innerText = "إرسال التحديث";
+            btn.disabled = false;
+            return;
+        }
+
+        // ⚠️ مهم جداً: استبدل المعرفات أدناه
+        const serviceID = 'service_kydc4t7';
+        const templateID = 'template_ji4riqg';
+
+        emailjs.send(serviceID, templateID, formData)
             .then(function() {
-                alert('تم إرسال التحديث بنجاح!');
+                alert('✅ تم الإرسال بنجاح!');
                 btn.innerText = "إرسال التحديث";
                 btn.disabled = false;
                 document.getElementById('storyForm').reset();
-            }, function(error) {
-                console.error('فشل الإرسال:', error);
-                alert('حدث خطأ أثناء الإرسال، حاول مرة أخرى.');
+            }, function(err) {
+                // عرض رسالة الخطأ بوضوح على الموبايل
+                let errorMsg = "❌ حدث خطأ غير معروف.";
+                if (err.text) {
+                    errorMsg = "❌ خطأ: " + err.text;
+                } else if (err.status) {
+                    errorMsg = "❌ خطأ في الاتصال (Code: " + err.status + ")";
+                }
+                
+                alert(errorMsg + "\n\nتأكد من:\n1. المفاتيح صحيحة.\n2. القالب مفعل.");
                 btn.innerText = "إرسال التحديث";
                 btn.disabled = false;
             });
     });
-</script>
+                                                          </script>
 
 </body>
   </html>
