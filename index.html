@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام متابعة القصص</title>
+    <!-- استدعاء مكتبة EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --failed-color: #c0392b;
+            --neutral-color: #95a5a6;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="email"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            box-sizing: border-box; /* لضمان عدم خروج الحواف */
+        }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        /* --- تصميم السويتشات المخصص --- */
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        .status-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* إخفاء زر الراديو الافتراضي */
+        .status-options input[type="radio"] {
+            display: none;
+        }
+
+        /* تصميم الدائرة/المربع */        .status-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%; /* دائري */
+            border: 2px solid #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: transparent; /* إخفاء النص الافتراضي */
+            transition: all 0.3s ease;
+        }
+
+        /* 1. الحالة المحايدة (الرمادي -) */
+        .status-icon.neutral::before {
+            content: "−";
+            color: #95a5a6;
+            font-weight: bold;
+        }
+        
+        .status-options input[value="neutral"]:checked + .status-icon {
+            border-color: var(--neutral-color);
+            background-color: #ecf0f1;
+        }
+
+        /* 2. الحالة الناجحة (الأخضر ✓) */
+        .status-icon.success::before {
+            content: "✓";
+            color: white;
+        }
+
+        .status-options input[value="success"]:checked + .status-icon {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.4);
+        }
+
+        /* 3. الحالة الفاشلة (الأحمر X) */
+        .status-icon.failed::before {
+            content: "✕";
+            color: white;
+            font-size: 20px;
+        }
+
+        .status-options input[value="failed"]:checked + .status-icon {
+            background-color: var(--failed-color);
+            border-color: var(--failed-color);
+            box-shadow: 0 0 10px rgba(192, 57, 43, 0.4);
+        }
+        /* زر الإرسال */
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>تحديث حالة القصة</h2>
+    <form id="storyForm">
+        
+        <!-- حقل الإيميل -->
+        <div class="form-group">
+            <label>البريد الإلكتروني للكاتب</label>
+            <input type="email" id="email" name="email" required placeholder="example@mail.com">
+        </div>
+
+        <!-- حقل العنوان -->
+        <div class="form-group">
+            <label>عنوان القصة</label>
+            <input type="text" id="title" name="title" required placeholder="اكتب عنوان القصة هنا">
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <!-- السويتشات (المراحل) -->
+        
+        <!-- المرحلة 1 -->
+        <div class="status-row">
+            <span class="status-label">تم استلام طلبك</span>            <div class="status-options">
+                <label>
+                    <input type="radio" name="step1" value="neutral" checked>
+                    <span class="status-icon neutral"></span>
+                </label>
+                <label>
+                    <input type="radio" name="step1" value="success">
+                    <span class="status-icon success"></span>
+                </label>
+                <label>
+                    <input type="radio" name="step1" value="failed">
+                    <span class="status-icon failed"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- المرحلة 2 -->
+        <div class="status-row">
+            <span class="status-label">تم مراجعة المحتوى</span>
+            <div class="status-options">
+                <label>
+                    <input type="radio" name="step2" value="neutral" checked>
+                    <span class="status-icon neutral"></span>
+                </label>
+                <label>
+                    <input type="radio" name="step2" value="success">
+                    <span class="status-icon success"></span>
+                </label>
+                <label>
+                    <input type="radio" name="step2" value="failed">
+                    <span class="status-icon failed"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- المرحلة 3 -->
+        <div class="status-row">
+            <span class="status-label">مراجعة لغوية ونحوية</span>
+            <div class="status-options">
+                <label>
+                    <input type="radio" name="step3" value="neutral" checked>
+                    <span class="status-icon neutral"></span>
+                </label>
+                <label>
+                    <input type="radio" name="step3" value="success">
+                    <span class="status-icon success"></span>
+                </label>
+                <label>
+                    <input type="radio" name="step3" value="failed">
+                    <span class="status-icon failed"></span>                </label>
+            </div>
+        </div>
+
+        <!-- المرحلة 4 -->
+        <div class="status-row">
+            <span class="status-label">القبول بالمكتبة</span>
+            <div class="status-options">
+                <label>
+                    <input type="radio" name="step4" value="neutral" checked>
+                    <span class="status-icon neutral"></span>
+                </label>
+                <label>
+                    <input type="radio" name="step4" value="success">
+                    <span class="status-icon success"></span>
+                </label>
+                <label>
+                    <input type="radio" name="step4" value="failed">
+                    <span class="status-icon failed"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- الملاحظات -->
+        <div class="form-group">
+            <label>الملاحظات</label>
+            <textarea id="notes" name="notes" placeholder="أضف أي ملاحظات إضافية..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" id="sendBtn">إرسال التحديث</button>
+    </form>
+</div>
+
+<script>
+    // 1. تهيئة EmailJS
+    // استبدل YOUR_PUBLIC_KEY بمفتاحك العام من لوحة تحكم EmailJS
+    (function() {
+        emailjs.init("HEgMSXV2gcQ_27WMg");
+    })();
+
+    // 2. التعامل مع إرسال النموذج
+    document.getElementById('storyForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const btn = document.getElementById('sendBtn');
+        btn.innerText = "جاري الإرسال...";
+        btn.disabled = true;
+
+        // جمع البيانات من الحقول
+        const formData = {            email: document.getElementById('email').value,
+            title: document.getElementById('title').value,
+            notes: document.getElementById('notes').value,
+            
+            // جمع حالة كل خطوة
+            step1: document.querySelector('input[name="step1"]:checked').value,
+            step2: document.querySelector('input[name="step2"]:checked').value,
+            step3: document.querySelector('input[name="step3"]:checked').value,
+            step4: document.querySelector('input[name="step4"]:checked').value,
+        };
+
+        // 3. إرسال البيانات لـ EmailJS
+        // استبدل YOUR_SERVICE_ID و YOUR_TEMPLATE_ID بالبيانات الخاصة بك
+        emailjs.send('service_kydc4t7', 'template_ji4riqg', formData)
+            .then(function() {
+                alert('تم إرسال التحديث بنجاح!');
+                btn.innerText = "إرسال التحديث";
+                btn.disabled = false;
+                document.getElementById('storyForm').reset();
+            }, function(error) {
+                console.error('فشل الإرسال:', error);
+                alert('حدث خطأ أثناء الإرسال، حاول مرة أخرى.');
+                btn.innerText = "إرسال التحديث";
+                btn.disabled = false;
+            });
+    });
+</script>
+
+</body>
+  </html>
