@@ -7,7 +7,6 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
-
         :root {
             --primary-color: #2c3e50;
             --accent-color: #3498db;
@@ -15,7 +14,6 @@
             --failed-color: #c0392b;
             --neutral-color: #95a5a6;
         }
-
         body {
             font-family: 'Tajawal', sans-serif;
             background-color: #f4f7f6;
@@ -25,7 +23,6 @@
             min-height: 100vh;
             margin: 0;
         }
-
         .container {
             background: white;
             padding: 2rem;
@@ -34,135 +31,36 @@
             width: 100%;
             max-width: 500px;
         }
-
-        h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
+        h2 { text-align: center; color: var(--primary-color); margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; color: #555; }
+        input[type="email"], input[type="text"], textarea {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; box-sizing: border-box;
         }
-
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="email"],
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-family: inherit;
-            box-sizing: border-box;
-        }
-
-        textarea {
-            resize: vertical;
-            height: 100px;
-        }
-
+        textarea { resize: vertical; height: 80px; }
         .status-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;
         }
-
-        .status-label {
-            font-size: 0.9rem;
-            flex-grow: 1;
-            margin-left: 10px;
-        }
-
-        .status-options {
-            display: flex;
-            gap: 10px;
-        }
-
-        .status-options input[type="radio"] {
-            display: none;
-        }
-
+        .status-label { font-size: 0.9rem; flex-grow: 1; margin-left: 10px; }
+        .status-options { display: flex; gap: 10px; }
+        .status-options input[type="radio"] { display: none; }
         .status-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid #ddd;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: transparent;
-            transition: all 0.3s ease;
+            width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; color: transparent; transition: all 0.3s ease;
         }
-
-        .status-icon.neutral::before {
-            content: "−";
-            color: #95a5a6;
-            font-weight: bold;
-        }
-        
-        .status-options input[value="neutral"]:checked + .status-icon {
-            border-color: var(--neutral-color);
-            background-color: #ecf0f1;
-        }
-
-        .status-icon.success::before {
-            content: "✓";
-            color: white;
-        }
-
-        .status-options input[value="success"]:checked + .status-icon {
-            background-color: var(--success-color);
-            border-color: var(--success-color);
-            box-shadow: 0 0 10px rgba(39, 174, 96, 0.4);
-        }
-
-        .status-icon.failed::before {
-            content: "✕";
-            color: white;
-            font-size: 20px;
-        }
-
-        .status-options input[value="failed"]:checked + .status-icon {
-            background-color: var(--failed-color);
-            border-color: var(--failed-color);
-            box-shadow: 0 0 10px rgba(192, 57, 43, 0.4);
-        }
-
+        .status-icon.neutral::before { content: "−"; color: #95a5a6; font-weight: bold; }
+        .status-options input[value="neutral"]:checked + .status-icon { border-color: var(--neutral-color); background-color: #ecf0f1; }
+        .status-icon.success::before { content: "✓"; color: white; }
+        .status-options input[value="success"]:checked + .status-icon { background-color: var(--success-color); border-color: var(--success-color); }
+        .status-icon.failed::before { content: "✕"; color: white; font-size: 20px; }
+        .status-options input[value="failed"]:checked + .status-icon { background-color: var(--failed-color); border-color: var(--failed-color); }
         .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 10px;
+            width: 100%; padding: 12px; background-color: var(--accent-color); color: white; border: none;
+            border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.3s; margin-top: 10px;
         }
-
-        .submit-btn:hover {
-            background-color: #2980b9;
-        }
-
-        .submit-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+        .submit-btn:hover { background-color: #2980b9; }
+        .submit-btn:disabled { background-color: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -170,94 +68,56 @@
 <div class="container">
     <h2>تحديث حالة القصة</h2>
     <form id="storyForm">
-        
         <div class="form-group">
             <label>البريد الإلكتروني للكاتب</label>
-            <input type="email" id="email" name="email" required placeholder="example@mail.com">
+            <input type="email" id="email" required placeholder="example@mail.com">
         </div>
-
         <div class="form-group">
             <label>عنوان القصة</label>
-            <input type="text" id="title" name="title" required placeholder="اكتب عنوان القصة هنا">
+            <input type="text" id="title" required placeholder="اكتب عنوان القصة هنا">
         </div>
 
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
 
         <div class="status-row">
-            <span class="status-label">تم استلام طلبك</span>
+            <span class="status-label">1. استلام الطلب</span>
             <div class="status-options">
-                <label>
-                    <input type="radio" name="step1" value="neutral" checked>
-                    <span class="status-icon neutral"></span>
-                </label>
-                <label>
-                    <input type="radio" name="step1" value="success">
-                    <span class="status-icon success"></span>
-                </label>
-                <label>
-                    <input type="radio" name="step1" value="failed">
-                    <span class="status-icon failed"></span>
-                </label>
+                <label><input type="radio" name="step1" value="neutral" checked><span class="status-icon neutral"></span></label>
+                <label><input type="radio" name="step1" value="success"><span class="status-icon success"></span></label>
+                <label><input type="radio" name="step1" value="failed"><span class="status-icon failed"></span></label>
             </div>
         </div>
 
         <div class="status-row">
-            <span class="status-label">تم مراجعة المحتوى</span>
+            <span class="status-label">2. مراجعة المحتوى</span>
             <div class="status-options">
-                <label>
-                    <input type="radio" name="step2" value="neutral" checked>
-                    <span class="status-icon neutral"></span>
-                </label>
-                <label>
-                    <input type="radio" name="step2" value="success">
-                    <span class="status-icon success"></span>
-                </label>
-                <label>
-                    <input type="radio" name="step2" value="failed">
-                    <span class="status-icon failed"></span>
-                </label>
+                <label><input type="radio" name="step2" value="neutral" checked><span class="status-icon neutral"></span></label>
+                <label><input type="radio" name="step2" value="success"><span class="status-icon success"></span></label>
+                <label><input type="radio" name="step2" value="failed"><span class="status-icon failed"></span></label>
             </div>
         </div>
 
         <div class="status-row">
-            <span class="status-label">مراجعة لغوية ونحوية</span>
+            <span class="status-label">3. المراجعة اللغوية</span>
             <div class="status-options">
-                <label>
-                    <input type="radio" name="step3" value="neutral" checked>
-                    <span class="status-icon neutral"></span>
-                </label>
-                <label>
-                    <input type="radio" name="step3" value="success">
-                    <span class="status-icon success"></span>
-                </label>
-                <label>
-                    <input type="radio" name="step3" value="failed">
-                    <span class="status-icon failed"></span>
-                </label>
+                <label><input type="radio" name="step3" value="neutral" checked><span class="status-icon neutral"></span></label>
+                <label><input type="radio" name="step3" value="success"><span class="status-icon success"></span></label>
+                <label><input type="radio" name="step3" value="failed"><span class="status-icon failed"></span></label>
             </div>
         </div>
 
         <div class="status-row">
-            <span class="status-label">القبول بالمكتبة</span>
+            <span class="status-label">4. القبول بالمكتبة</span>
             <div class="status-options">
-                <label>
-                    <input type="radio" name="step4" value="neutral" checked>
-                    <span class="status-icon neutral"></span>
-                </label>
-                <label>
-                    <input type="radio" name="step4" value="success">
-                    <span class="status-icon success"></span>
-                </label>
-                <label>
-                    <input type="radio" name="step4" value="failed">
-                    <span class="status-icon failed"></span>
-                </label>
+                <label><input type="radio" name="step4" value="neutral" checked><span class="status-icon neutral"></span></label>
+                <label><input type="radio" name="step4" value="success"><span class="status-icon success"></span></label>
+                <label><input type="radio" name="step4" value="failed"><span class="status-icon failed"></span></label>
             </div>
         </div>
 
         <div class="form-group">
             <label>الملاحظات</label>
-            <textarea id="notes" name="notes" placeholder="أضف أي ملاحظات إضافية..."></textarea>
+            <textarea id="notes" placeholder="أضف أي ملاحظات إضافية..."></textarea>
         </div>
 
         <button type="submit" class="submit-btn" id="sendBtn">إرسال التحديث</button>
@@ -265,58 +125,54 @@
 </div>
 
 <script>
-    (function() {
-        emailjs.init("HEgMSXV2gcQ_27WMg");
-    })();
+    (function() { emailjs.init("HEgMSXV2gcQ_27WMg"); })();
 
     document.getElementById('storyForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        
         const btn = document.getElementById('sendBtn');
         btn.innerText = "جاري الإرسال...";
         btn.disabled = true;
 
+        // وظيفة لتجهيز بيانات الإيميل
+        const getStatusData = (radioName) => {
+            const val = document.querySelector(`input[name="${radioName}"]:checked`).value;
+            if (val === 'success') return { cls: 'status-success', icon: 'green', txt: '✔ تم' };
+            if (val === 'failed') return { cls: 'status-failed', icon: 'red', txt: '✘ خطأ' };
+            return { cls: 'status-neutral', icon: 'gray', txt: '- انتظار' };
+        };
+
+        const s1 = getStatusData('step1');
+        const s2 = getStatusData('step2');
+        const s3 = getStatusData('step3');
+        const s4 = getStatusData('step4');
+
+        // تعديل نص القبول الخاص بالخطوة الرابعة
+        if(s4.txt === '✔ تم') s4.txt = '✔ مقبول';
+        if(s4.txt === '✘ خطأ') s4.txt = '✘ مرفوض';
+
         const formData = {
             email: document.getElementById('email').value,
             title: document.getElementById('title').value,
-            notes: document.getElementById('notes').value,
-            step1: document.querySelector('input[name="step1"]:checked').value,
-            step2: document.querySelector('input[name="step2"]:checked').value,
-            step3: document.querySelector('input[name="step3"]:checked').value,
-            step4: document.querySelector('input[name="step4"]:checked').value,
+            notes: document.getElementById('notes').value || "لا يوجد",
+            // نرسل متغيرات بسيطة لـ EmailJS
+            s1_cls: s1.cls, s1_icon: s1.icon, s1_txt: s1.txt,
+            s2_cls: s2.cls, s2_icon: s2.icon, s2_txt: s2.txt,
+            s3_cls: s3.cls, s3_icon: s3.icon, s3_txt: s3.txt,
+            s4_cls: s4.cls, s4_icon: s4.icon, s4_txt: s4.txt
         };
 
-        if(!formData.email || !formData.title) {
-            alert("الرجاء ملء الإيميل والعنوان أولاً!");
-            btn.innerText = "إرسال التحديث";
-            btn.disabled = false;
-            return;
-        }
-
-        const serviceID = 'service_x2dyeil';
-        const templateID = 'template_ji4riqg';
-
-        emailjs.send(serviceID, templateID, formData)
-            .then(function() {
+        emailjs.send('service_x2dyeil', 'template_ji4riqg', formData)
+            .then(() => {
                 alert('✅ تم الإرسال بنجاح!');
                 btn.innerText = "إرسال التحديث";
                 btn.disabled = false;
                 document.getElementById('storyForm').reset();
-            }, function(err) {
-                let errorMsg = "❌ حدث خطأ غير معروف.";
-                if (err.text) {
-                    errorMsg = "❌ خطأ: " + err.text;
-                } else if (err.status) {
-                    errorMsg = "❌ خطأ في الاتصال (Code: " + err.status + ")";
-                }
-                
-                alert(errorMsg + "\n\nتأكد من:\n1. المفاتيح صحيحة.\n2. القالب مفعل.");
+            }, (err) => {
+                alert("❌ فشل الإرسال: " + JSON.stringify(err));
                 btn.innerText = "إرسال التحديث";
                 btn.disabled = false;
             });
     });
 </script>
-
 </body>
 </html>
-
